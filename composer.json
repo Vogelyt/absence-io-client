@@ -1,20 +1,24 @@
 {
     "name": "vogelyt/absence-io-client",
-    "description": "API-Client for Absence.io",
+    "description": "API client for absence.io",
     "type": "library",
-    "require": {
-        "guzzlehttp/guzzle": "^7.0"
-    },
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Vogelyt\\AbsenceIoClient\\": "src/"
-        }
-    },
     "authors": [
         {
             "name": "Kai Rohrpasser",
             "email": "absence-io-client@karo.software"
         }
-    ]
+    ],
+    "require": {
+        "php": "^8.3",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vogelyt\\AbsenceIoClient\\": "src/"
+        }
+    }
 }

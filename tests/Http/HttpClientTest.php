@@ -76,4 +76,58 @@ class HttpClientTest extends TestCase
 
         $this->assertEquals(['result' => 'ok'], $result);
     }
+
+    public function testPut()
+    {
+        $this->hawkAuthMock->expects($this->once())
+            ->method('sign')
+            ->with('PUT', 'https://app.absence.io/api/v2/test', 'test_hawk_id', 'test_hawk_key')
+            ->willReturn(['Authorization' => 'Hawk test_header']);
+
+        $responseMock = $this->createMock(ResponseInterface::class);
+        $bodyMock = $this->createMock(StreamInterface::class);
+        $bodyMock->method('__toString')->willReturn('{"result": "updated"}');
+        $responseMock->method('getBody')->willReturn($bodyMock);
+
+        $this->guzzleMock->expects($this->once())
+            ->method('request')
+            ->with('PUT', 'test', [
+                'headers' => ['Authorization' => 'Hawk test_header'],
+                'json' => ['key' => 'updated_value']
+            ])
+            ->willReturn($responseMock);
+
+        $httpClient = new HttpClient($this->config, $this->guzzleMock, $this->hawkAuthMock);
+
+        $result = $httpClient->put('test', ['key' => 'updated_value']);
+
+        $this->assertEquals(['result' => 'updated'], $result);
+    }
+
+    public function testDelete()
+    {
+        $this->hawkAuthMock->expects($this->once())
+            ->method('sign')
+            ->with('DELETE', 'https://app.absence.io/api/v2/test', 'test_hawk_id', 'test_hawk_key')
+            ->willReturn(['Authorization' => 'Hawk test_header']);
+
+        $responseMock = $this->createMock(ResponseInterface::class);
+        $bodyMock = $this->createMock(StreamInterface::class);
+        $bodyMock->method('__toString')->willReturn('{"result": "deleted"}');
+        $responseMock->method('getBody')->willReturn($bodyMock);
+
+        $this->guzzleMock->expects($this->once())
+            ->method('request')
+            ->with('DELETE', 'test', [
+                'headers' => ['Authorization' => 'Hawk test_header'],
+                'json' => []
+            ])
+            ->willReturn($responseMock);
+
+        $httpClient = new HttpClient($this->config, $this->guzzleMock, $this->hawkAuthMock);
+
+        $result = $httpClient->delete('test');
+
+        $this->assertEquals(['result' => 'deleted'], $result);
+    }
 }

@@ -49,23 +49,65 @@ class HttpClient
     }
 
     public function post(string $path, array $payload = []): array
-{
-    $cleanPath = ltrim($path, '/');
-    $baseUrl = rtrim($this->config->getBaseUrl(), '/') . '/';
-    $fullUrl = $baseUrl . $cleanPath;
+    {
+        $cleanPath = ltrim($path, '/');
+        $baseUrl = rtrim($this->config->getBaseUrl(), '/') . '/';
+        $fullUrl = $baseUrl . $cleanPath;
 
-    $authHeader = $this->hawkAuth->sign(
-        'POST',
-        $fullUrl,
-        $this->config->getHawkId(),
-        $this->config->getHawkKey()
-    );
+        $authHeader = $this->hawkAuth->sign(
+            'POST',
+            $fullUrl,
+            $this->config->getHawkId(),
+            $this->config->getHawkKey()
+        );
 
-    $response = $this->client->request('POST', $cleanPath, [
-        'headers' => $authHeader,
-        'json'    => $payload,
-    ]);
+        $response = $this->client->request('POST', $cleanPath, [
+            'headers' => $authHeader,
+            'json'    => $payload,
+        ]);
 
-    return json_decode((string) $response->getBody(), true);
-}
+        return json_decode((string) $response->getBody(), true);
+    }
+
+    public function put(string $path, array $payload = []): array
+    {
+        $cleanPath = ltrim($path, '/');
+        $baseUrl = rtrim($this->config->getBaseUrl(), '/') . '/';
+        $fullUrl = $baseUrl . $cleanPath;
+
+        $authHeader = $this->hawkAuth->sign(
+            'PUT',
+            $fullUrl,
+            $this->config->getHawkId(),
+            $this->config->getHawkKey()
+        );
+
+        $response = $this->client->request('PUT', $cleanPath, [
+            'headers' => $authHeader,
+            'json'    => $payload,
+        ]);
+
+        return json_decode((string) $response->getBody(), true);
+    }
+
+    public function delete(string $path, array $payload = []): array
+    {
+        $cleanPath = ltrim($path, '/');
+        $baseUrl = rtrim($this->config->getBaseUrl(), '/') . '/';
+        $fullUrl = $baseUrl . $cleanPath;
+
+        $authHeader = $this->hawkAuth->sign(
+            'DELETE',
+            $fullUrl,
+            $this->config->getHawkId(),
+            $this->config->getHawkKey()
+        );
+
+        $response = $this->client->request('DELETE', $cleanPath, [
+            'headers' => $authHeader,
+            'json'    => $payload,
+        ]);
+
+        return json_decode((string) $response->getBody(), true);
+    }
 }

@@ -3,6 +3,8 @@
 Comming soon, package is not published yet...
 
 ## Local Development
+
+### With Docker
 Start the PHP Docker-Container with:  
 ```
 
@@ -21,5 +23,11 @@ Add your HAWK_ID and HAWK_KEY to tests/test.php and run the following command to
 ```
 
 docker compose run --rm php php tests/test.php
+
+```
+
+### Without Docker
+```
+composer install
 
 ```

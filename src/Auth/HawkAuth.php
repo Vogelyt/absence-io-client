@@ -10,9 +10,9 @@ class HawkAuth
 {
     private Client $client;
 
-    public function __construct()
+    public function __construct(?Client $client = null)
     {
-        $this->client = ClientBuilder::create()->build();
+        $this->client = $client ?? ClientBuilder::create()->build();
     }
 
     public function sign(

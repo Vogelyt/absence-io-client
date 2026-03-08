@@ -13,9 +13,10 @@ class HttpClient
 
     public function __construct(
         private Config $config,
-        ?Client $client = null
+        ?Client $client = null,
+        ?HawkAuth $hawkAuth = null
     ) {
-        $this->hawkAuth = new HawkAuth();
+        $this->hawkAuth = $hawkAuth ?? new HawkAuth();
 
         $this->client = $client ?? new Client([
             'base_uri' => rtrim($config->getBaseUrl(), '/') . '/',

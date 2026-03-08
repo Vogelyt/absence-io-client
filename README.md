@@ -28,6 +28,7 @@ docker compose run --rm php php tests/test.php
 
 ### Without Docker
 ```
+
 composer install
 
 ```

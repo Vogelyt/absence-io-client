@@ -9,6 +9,10 @@ use Vogelyt\AbsenceIoClient\Auth\HawkAuth;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Vogelyt\AbsenceIoClient\Exception\AuthException;
+use Vogelyt\AbsenceIoClient\Exception\ValidationException;
+use Vogelyt\AbsenceIoClient\Exception\NotFoundException;
+use Vogelyt\AbsenceIoClient\Exception\ApiException;
 
 class HttpClientTest extends TestCase
 {
@@ -31,6 +35,7 @@ class HttpClientTest extends TestCase
             ->willReturn(['Authorization' => 'Hawk test_header']);
 
         $responseMock = $this->createMock(ResponseInterface::class);
+        $responseMock->method('getStatusCode')->willReturn(200);
         $bodyMock = $this->createMock(StreamInterface::class);
         $bodyMock->method('__toString')->willReturn('{"data": "test"}');
         $responseMock->method('getBody')->willReturn($bodyMock);
@@ -58,6 +63,7 @@ class HttpClientTest extends TestCase
             ->willReturn(['Authorization' => 'Hawk test_header']);
 
         $responseMock = $this->createMock(ResponseInterface::class);
+        $responseMock->method('getStatusCode')->willReturn(200);
         $bodyMock = $this->createMock(StreamInterface::class);
         $bodyMock->method('__toString')->willReturn('{"result": "ok"}');
         $responseMock->method('getBody')->willReturn($bodyMock);
@@ -85,6 +91,7 @@ class HttpClientTest extends TestCase
             ->willReturn(['Authorization' => 'Hawk test_header']);
 
         $responseMock = $this->createMock(ResponseInterface::class);
+        $responseMock->method('getStatusCode')->willReturn(200);
         $bodyMock = $this->createMock(StreamInterface::class);
         $bodyMock->method('__toString')->willReturn('{"result": "updated"}');
         $responseMock->method('getBody')->willReturn($bodyMock);
@@ -112,6 +119,7 @@ class HttpClientTest extends TestCase
             ->willReturn(['Authorization' => 'Hawk test_header']);
 
         $responseMock = $this->createMock(ResponseInterface::class);
+        $responseMock->method('getStatusCode')->willReturn(200);
         $bodyMock = $this->createMock(StreamInterface::class);
         $bodyMock->method('__toString')->willReturn('{"result": "deleted"}');
         $responseMock->method('getBody')->willReturn($bodyMock);
@@ -129,5 +137,62 @@ class HttpClientTest extends TestCase
         $result = $httpClient->delete('test');
 
         $this->assertEquals(['result' => 'deleted'], $result);
+    }
+
+    private function createResponseWithStatus(int $status): ResponseInterface
+    {
+        $responseMock = $this->createMock(ResponseInterface::class);
+        $responseMock->method('getStatusCode')->willReturn($status);
+        $bodyMock = $this->createMock(StreamInterface::class);
+        $bodyMock->method('__toString')->willReturn('');
+        $responseMock->method('getBody')->willReturn($bodyMock);
+        return $responseMock;
+    }
+
+    public function testThrowsAuthExceptionOn401()
+    {
+        $this->expectException(AuthException::class);
+
+        $this->hawkAuthMock->method('sign')
+            ->willReturn(['Authorization' => 'Hawk header']);
+
+        $this->guzzleMock->method('request')
+            ->willReturn($this->createResponseWithStatus(401));
+
+        $httpClient = new HttpClient($this->config, $this->guzzleMock, $this->hawkAuthMock);
+        $httpClient->get('test');
+    }
+
+    public function testThrowsValidationExceptionOn422()
+    {
+        $this->expectException(ValidationException::class);
+
+        $this->hawkAuthMock->method('sign')->willReturn(['Authorization' => 'Hawk header']);
+        $this->guzzleMock->method('request')->willReturn($this->createResponseWithStatus(422));
+
+        $httpClient = new HttpClient($this->config, $this->guzzleMock, $this->hawkAuthMock);
+        $httpClient->get('test');
+    }
+
+    public function testThrowsNotFoundExceptionOn404()
+    {
+        $this->expectException(NotFoundException::class);
+
+        $this->hawkAuthMock->method('sign')->willReturn(['Authorization' => 'Hawk header']);
+        $this->guzzleMock->method('request')->willReturn($this->createResponseWithStatus(404));
+
+        $httpClient = new HttpClient($this->config, $this->guzzleMock, $this->hawkAuthMock);
+        $httpClient->get('test');
+    }
+
+    public function testThrowsGenericApiExceptionOnOtherError()
+    {
+        $this->expectException(ApiException::class);
+
+        $this->hawkAuthMock->method('sign')->willReturn(['Authorization' => 'Hawk header']);
+        $this->guzzleMock->method('request')->willReturn($this->createResponseWithStatus(500));
+
+        $httpClient = new HttpClient($this->config, $this->guzzleMock, $this->hawkAuthMock);
+        $httpClient->get('test');
     }
 }

@@ -46,4 +46,25 @@ class HttpClient
 
         return json_decode((string) $response->getBody(), true);
     }
+
+    public function post(string $path, array $payload = []): array
+{
+    $cleanPath = ltrim($path, '/');
+    $baseUrl = rtrim($this->config->getBaseUrl(), '/') . '/';
+    $fullUrl = $baseUrl . $cleanPath;
+
+    $authHeader = $this->hawkAuth->sign(
+        'POST',
+        $fullUrl,
+        $this->config->getHawkId(),
+        $this->config->getHawkKey()
+    );
+
+    $response = $this->client->request('POST', $cleanPath, [
+        'headers' => $authHeader,
+        'json'    => $payload,
+    ]);
+
+    return json_decode((string) $response->getBody(), true);
+}
 }

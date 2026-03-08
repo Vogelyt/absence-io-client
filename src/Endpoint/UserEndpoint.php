@@ -9,9 +9,10 @@ class UserEndpoint
     public function __construct(
         private HttpClient $http
     ) {}
-
+    // retrieve all users
     public function getAll(): array
     {
-        return $this->http->get('users');
+        // Users have to be fetched with empty payload and post method
+        return $this->http->post('users', []);
     }
 }

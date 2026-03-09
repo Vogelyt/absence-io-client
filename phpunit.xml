@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php" colors="true" verbose="true">
+<phpunit bootstrap="vendor/autoload.php" colors="true">
     <testsuites>
         <testsuite name="default">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
 
-    <coverage processUncoveredFiles="true" ignoreDeprecatedCodeUnitsFromCodeCoverage="true">
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
-        <exclude>
-            <directory suffix="Interface.php">src</directory>
-        </exclude>
+    <coverage>
         <report>
             <clover outputFile="coverage.xml" />
             <html outputDirectory="coverage" />

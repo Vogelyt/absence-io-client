@@ -1,8 +1,19 @@
 {
     "name": "vogelyt/absence-io-client",
-    "description": "API client for absence.io",
+    "description": "Comprehensive PHP client library for the absence.io API with full CRUD operations, OAuth support, and advanced querying",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "absence",
+        "api",
+        "client",
+        "php",
+        "absence-io",
+        "leave",
+        "vacation",
+        "time-off"
+    ],
+    "homepage": "https://github.com/vogelyt/absence-io-client",
     "authors": [
         {
             "name": "Kai Rohrpasser",
@@ -10,16 +21,36 @@
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": "^8.1",
         "guzzlehttp/guzzle": "^7.0",
         "dflydev/hawk": "^0.0.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^11.5"
+        "phpunit/phpunit": "^11.5",
+        "phpstan/phpstan": "^1.10",
+        "squizlabs/php_codesniffer": "^3.8"
     },
     "autoload": {
         "psr-4": {
             "Vogelyt\\AbsenceIoClient\\": "src/"
         }
-    }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Vogelyt\\AbsenceIoClient\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit",
+        "test:coverage": "./vendor/bin/phpunit --coverage-html coverage",
+        "analyse": "./vendor/bin/phpstan analyse src --level=8",
+        "lint": "./vendor/bin/phpcs src --standard=PSR12",
+        "lint:fix": "./vendor/bin/phpcbf src --standard=PSR12"
+    },
+    "support": {
+        "issues": "https://github.com/vogelyt/absence-io-client/issues",
+        "source": "https://github.com/vogelyt/absence-io-client"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Vogelyt\AbsenceIoClient\Http\HttpClient;
 use Vogelyt\AbsenceIoClient\Config\Config;
 use Vogelyt\AbsenceIoClient\Auth\HawkAuth;
+use Vogelyt\AbsenceIoClient\Auth\OAuthClient;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -193,6 +194,55 @@ class HttpClientTest extends TestCase
         $this->guzzleMock->method('request')->willReturn($this->createResponseWithStatus(500));
 
         $httpClient = new HttpClient($this->config, $this->guzzleMock, $this->hawkAuthMock);
+        $httpClient->get('test');
+    }
+
+    public function testOAuthAuthenticationWithBearerToken()
+    {
+        $oauthClientMock = $this->createMock(OAuthClient::class);
+        $oauthClientMock->expects($this->once())
+            ->method('getAccessToken')
+            ->willReturn('oauth-token-123');
+
+        $responseMock = $this->createMock(ResponseInterface::class);
+        $responseMock->method('getStatusCode')->willReturn(200);
+        $bodyMock = $this->createMock(StreamInterface::class);
+        $bodyMock->method('__toString')->willReturn('{"data": "test"}');
+        $responseMock->method('getBody')->willReturn($bodyMock);
+
+        $this->guzzleMock->expects($this->once())
+            ->method('request')
+            ->with('GET', 'test', [
+                'headers' => ['Authorization' => 'Bearer oauth-token-123'],
+                'query' => []
+            ])
+            ->willReturn($responseMock);
+
+        $httpClient = new HttpClient($this->config, $this->guzzleMock, null, $oauthClientMock);
+
+        $result = $httpClient->get('test');
+
+        $this->assertEquals(['data' => 'test'], $result);
+    }
+
+    public function testOAuthConfigurationDetection()
+    {
+        $oauthConfig = Config::withOAuth('oauth-id', 'oauth-secret');
+        $oauthClientMock = $this->createMock(OAuthClient::class);
+        $oauthClientMock->method('getAccessToken')->willReturn('token');
+
+        $responseMock = $this->createMock(ResponseInterface::class);
+        $responseMock->method('getStatusCode')->willReturn(200);
+        $bodyMock = $this->createMock(StreamInterface::class);
+        $bodyMock->method('__toString')->willReturn('{}');
+        $responseMock->method('getBody')->willReturn($bodyMock);
+
+        $this->guzzleMock->method('request')->willReturn($responseMock);
+
+        $httpClient = new HttpClient($oauthConfig, $this->guzzleMock, null, $oauthClientMock);
+
+        // Should use OAuth, not Hawk
+        $this->assertTrue($oauthConfig->isOAuthConfigured());
         $httpClient->get('test');
     }
 }

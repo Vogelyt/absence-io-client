@@ -7,6 +7,11 @@
     </testsuites>
 
     <coverage>
+        <source>
+            <include>
+                <directory suffix=".php">src</directory>
+            </include>
+        </source>
         <report>
             <clover outputFile="coverage.xml" />
             <html outputDirectory="coverage" />

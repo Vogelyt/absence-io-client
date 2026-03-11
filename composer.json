@@ -13,17 +13,20 @@
         "vacation",
         "time-off"
     ],
-    "homepage": "https://github.com/vogelyt/absence-io-client",
+    "homepage": "https://github.com/Vogelyt/absence-io-client",
     "authors": [
         {
             "name": "Kai Rohrpasser",
             "email": "absence-io-client@karo.software"
+        },
+        {
+            "name": "Vogel_YT"
         }
     ],
     "require": {
         "php": "^8.1",
         "guzzlehttp/guzzle": "^7.0",
-        "dflydev/hawk": "^0.0.0"
+        "dflydev/hawk": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.5",
@@ -48,8 +51,8 @@
         "lint:fix": "./vendor/bin/phpcbf src --standard=PSR12"
     },
     "support": {
-        "issues": "https://github.com/vogelyt/absence-io-client/issues",
-        "source": "https://github.com/vogelyt/absence-io-client"
+        "issues": "https://github.com/Vogelyt/absence-io-client/issues",
+        "source": "https://github.com/Vogelyt/absence-io-client"
     },
     "minimum-stability": "stable",
     "prefer-stable": true
